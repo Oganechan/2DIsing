@@ -1,0 +1,7 @@
+.vscode
+.clangd
+.clang-format
+build/
+release/
+debug/
+bin/
