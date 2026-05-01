@@ -1,0 +1,41 @@
+add_executable(test_geometry)
+target_sources(test_geometry
+  PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_geometry.cpp
+)
+target_link_libraries(test_geometry
+  PUBLIC
+    lattice
+)
+
+add_executable(test_atoms)
+target_sources(test_atoms
+  PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_atoms.cpp
+)
+target_link_libraries(test_atoms
+  PUBLIC
+    lattice
+)
+
+add_executable(test_calculator)
+target_sources(test_calculator
+  PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_calculator.cpp
+)
+target_link_libraries(test_calculator
+  PUBLIC
+    physics
+)
+
+add_executable(test_wanglandau)
+target_sources(test_wanglandau
+  PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_wanglandau.cpp
+)
+target_link_libraries(test_wanglandau
+  PUBLIC
+    algorithm
+  PRIVATE
+    quadmath
+)
