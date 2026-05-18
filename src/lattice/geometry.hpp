@@ -5,12 +5,22 @@
 #include <array>
 #include <vector>
 
-namespace lattice {
+namespace lattice
+{
 
-enum class CrystalType { RECTANGULAR };
-enum class BoundaryType { PERIODIC, HARD };
+  enum class CrystalType
+  {
+    RECTANGULAR,
+    TRIANGULAR
+  };
+  enum class BoundaryType
+  {
+    PERIODIC,
+    HARD
+  };
 
-class Geometry {
+  class Geometry
+  {
   public:
     explicit Geometry(const Config &config);
 
@@ -41,7 +51,7 @@ class Geometry {
     void compute_indices();
     void compute_positions();
     void compute_neighbors();
-};
+  };
 
 } // namespace lattice
 
