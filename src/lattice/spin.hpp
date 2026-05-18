@@ -13,7 +13,7 @@ class IsingSpin {
 
     int8_t value() const { return value_; }
 
-    void randomize() { value_ = thread_local_random().bernoulli(0.5) ? 1 : -1; }
+    void randomize(Random &rng) { value_ = rng.bernoulli(0.5) ? 1 : -1; }
     void flip() { value_ = -value_; }
     void set(int8_t new_value) { value_ = new_value; }
     int8_t dot(const IsingSpin &other) const { return value_ * other.value_; }

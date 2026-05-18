@@ -52,7 +52,7 @@ void lattice::Atoms::set_random_defects() {
 
 void lattice::Atoms::initialize_random() {
     for (size_t i = 0; i < spins_.size(); ++i)
-        spins_[i].randomize();
+        spins_[i].randomize(rng_);
 }
 
 void lattice::Atoms::initialize_ferromagnetic() {
