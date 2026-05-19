@@ -7,31 +7,36 @@
 
 physics::Calculator::Calculator(const lattice::Atoms &atoms,
                                 const Config &config)
-    : atoms_(atoms), geometry_(atoms.get_geometry()),
+    : atoms_(atoms), topology_(atoms_.get_topology()), interaction_(atoms.get_interaction()),
       exchange_constants_(
-          config.get<std::vector<double>>("physical.exchange_constants")) {
-    if (exchange_constants_.size() < geometry_.get_shell_count())
+          config.get<std::vector<double>>("physical.exchange_constants"))
+{
+    if (exchange_constants_.size() < topology_.get_shell_count())
         throw std::runtime_error("Not enough exchange constants");
 
     E_min = precalc_minimal_energy();
     build_weighted_neighbors();
 }
 
-double physics::Calculator::calculate_total_energy() const {
+double physics::Calculator::calculate_total_energy() const
+{
     double total_energy = 0.0;
     const auto &spins = atoms_.get_spins();
 
     // #pragma omp parallel for reduction(+ : total_energy)
-    for (int atom_id : atoms_.get_magnetic_atoms()) {
+    for (int atom_id : atoms_.get_magnetic_atoms())
+    {
         const auto &spin1 = spins[atom_id];
 
-        for (int shell = 0; shell < geometry_.get_shell_count(); ++shell) {
+        for (int shell = 0; shell < topology_.get_shell_count(); ++shell)
+        {
             double J = exchange_constants_[shell];
 
             for (int neighbor_id :
-                 geometry_.get_neighbor_table()[atom_id][shell])
+                 interaction_.get_neighbor_table()[atom_id][shell])
                 if (atoms_.get_magnetic_state(neighbor_id) &&
-                    neighbor_id > atom_id) {
+                    neighbor_id > atom_id)
+                {
                     const auto &spin2 = spins[neighbor_id];
                     total_energy += -J * static_cast<double>(spin1.dot(spin2));
                 }
@@ -41,12 +46,14 @@ double physics::Calculator::calculate_total_energy() const {
     return total_energy;
 }
 
-double physics::Calculator::calculate_flip_energy(int atom_id) const {
+double physics::Calculator::calculate_flip_energy(int atom_id) const
+{
     double delta = 0.0;
     const auto &spins = atoms_.get_spins();
     const auto &spin1 = spins[atom_id];
 
-    for (const auto &[neighbor_id, J] : weighted_neighbors_[atom_id]) {
+    for (const auto &[neighbor_id, J] : weighted_neighbors_[atom_id])
+    {
         const auto &spin2 = spins[neighbor_id];
         delta += 2.0 * J * static_cast<double>(spin1.dot(spin2));
     }
@@ -54,7 +61,8 @@ double physics::Calculator::calculate_flip_energy(int atom_id) const {
     return delta;
 }
 
-double physics::Calculator::calculate_total_magnetization() const {
+double physics::Calculator::calculate_total_magnetization() const
+{
     double total_magnetization = 0.0;
     const auto &spins = atoms_.get_spins();
 
@@ -64,9 +72,9 @@ double physics::Calculator::calculate_total_magnetization() const {
     return total_magnetization;
 }
 
-double physics::Calculator::calculate_total_order() const {
+/* double physics::Calculator::calculate_total_order() const {
     const auto &spins = atoms_.get_spins();
-    const auto &indices = geometry_.get_atom_indices();
+    const auto &indices = topology_.get_atom_indices();
 
     std::array<double, 4> sub_mag = {0.0, 0.0, 0.0, 0.0};
     std::array<int, 4> sub_count = {0, 0, 0, 0};
@@ -91,14 +99,16 @@ double physics::Calculator::calculate_total_order() const {
     }
 
     return std::sqrt(order / 4.0);
-}
+}*/
 
-double physics::Calculator::precalc_minimal_energy() const {
+double physics::Calculator::precalc_minimal_energy() const
+{
     double E_min = 0.0;
-    const auto &neighbor_table = geometry_.get_neighbor_table();
+    const auto &neighbor_table = interaction_.get_neighbor_table();
 
     for (int atom_id : atoms_.get_magnetic_atoms())
-        for (int shell = 0; shell < geometry_.get_shell_count(); ++shell) {
+        for (int shell = 0; shell < topology_.get_shell_count(); ++shell)
+        {
             const double J = exchange_constants_[shell];
             for (int neighbor_id : neighbor_table[atom_id][shell])
                 if (atoms_.get_magnetic_state(neighbor_id) &&
@@ -109,15 +119,19 @@ double physics::Calculator::precalc_minimal_energy() const {
     return E_min;
 }
 
-void physics::Calculator::build_weighted_neighbors() {
-    const auto &neighbor_table = geometry_.get_neighbor_table();
-    weighted_neighbors_.resize(geometry_.get_atom_count());
+void physics::Calculator::build_weighted_neighbors()
+{
+    const auto &neighbor_table = interaction_.get_neighbor_table();
+    weighted_neighbors_.resize(topology_.get_atom_count());
 
-    for (int atom_id : atoms_.get_magnetic_atoms()) {
+    for (int atom_id : atoms_.get_magnetic_atoms())
+    {
         auto &neighbors = weighted_neighbors_[atom_id];
-        for (int shell = 0; shell < geometry_.get_shell_count(); ++shell) {
+        for (int shell = 0; shell < topology_.get_shell_count(); ++shell)
+        {
             double J = exchange_constants_[shell];
-            for (int neighbor_id : neighbor_table[atom_id][shell]) {
+            for (int neighbor_id : neighbor_table[atom_id][shell])
+            {
                 double effective_J =
                     atoms_.get_magnetic_state(neighbor_id) ? J : 0.0;
                 neighbors.emplace_back(neighbor_id, effective_J);

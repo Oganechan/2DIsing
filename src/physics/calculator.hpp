@@ -1,20 +1,22 @@
 #ifndef CALCULATOR_HPP
 #define CALCULATOR_HPP
 
-#include "../lattice/atoms.hpp"
+#include "atoms.hpp"
 #include <utility>
 #include <vector>
 
-namespace physics {
+namespace physics
+{
 
-class Calculator {
+  class Calculator
+  {
   public:
     explicit Calculator(const lattice::Atoms &atoms, const Config &config);
 
     double calculate_total_energy() const;
     double calculate_flip_energy(int atom_id) const;
     double calculate_total_magnetization() const;
-    double calculate_total_order() const;
+    // double calculate_total_order() const;
 
     double calculate_minimal_energy() const { return E_min; }
 
@@ -22,7 +24,8 @@ class Calculator {
 
   private:
     const lattice::Atoms &atoms_;
-    const lattice::Geometry &geometry_;
+    const lattice::Topology &topology_;
+    const lattice::Interaction &interaction_;
 
     const std::vector<double> exchange_constants_;
 
@@ -31,7 +34,7 @@ class Calculator {
 
     std::vector<std::vector<std::pair<int, double>>> weighted_neighbors_;
     void build_weighted_neighbors();
-};
+  };
 
 } // namespace physics
 

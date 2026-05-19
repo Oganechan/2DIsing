@@ -1,7 +1,7 @@
 #ifndef METROPOLIS_HPP
 #define METROPOLIS_HPP
 
-#include "../physics/calculator.hpp"
+#include "calculator.hpp"
 #include <filesystem>
 #include <vector>
 

@@ -1,7 +1,7 @@
 #ifndef SIMULATION_HPP
 #define SIMULATION_HPP
 
-#include "../external/config/config.hpp"
+#include "config.hpp"
 #include <filesystem>
 #include <map>
 #include <vector>

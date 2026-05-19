@@ -1,7 +1,7 @@
 #ifndef WANGLANDAU_HPP
 #define WANGLANDAU_HPP
 
-#include "../physics/calculator.hpp"
+#include "calculator.hpp"
 #include <quadmath.h>
 #include <unordered_map>
 

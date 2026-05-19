@@ -9,12 +9,15 @@ target_link_libraries(quadmath INTERFACE -lquadmath)
 add_library(lattice STATIC)
 target_sources(lattice
   PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/lattice/geometry.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/lattice/topology/topology.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/lattice/interaction/interaction.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/lattice/atoms.cpp
 )
 target_include_directories(lattice
   PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/lattice
+    ${CMAKE_CURRENT_SOURCE_DIR}/lattice/topology
+    ${CMAKE_CURRENT_SOURCE_DIR}/lattice/interaction
 )
 target_link_libraries(lattice
   PUBLIC

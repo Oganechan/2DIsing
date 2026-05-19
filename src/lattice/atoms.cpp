@@ -6,10 +6,10 @@
 #include <vector>
 
 lattice::Atoms::Atoms(const Config &config, Random &rng)
-    : rng_(rng), geometry_(config),
+    : rng_(rng), topology_(config), interaction_(topology_,config),
       concentration_(config.get<double>("physical.concentration")) {
 
-    int atom_count = geometry_.get_atom_count();
+    int atom_count = topology_.get_atom_count();
     spins_.resize(atom_count);
     magnetic_mask_.resize(atom_count, true);
     magnetic_atoms_.reserve(atom_count);
@@ -30,7 +30,7 @@ void lattice::Atoms::update_magnetic_list() {
 }
 
 void lattice::Atoms::set_random_defects() {
-    const int atom_count = geometry_.get_atom_count();
+    const int atom_count = topology_.get_atom_count();
     std::fill(magnetic_mask_.begin(), magnetic_mask_.end(), true);
 
     const int defect_count =
@@ -61,7 +61,7 @@ void lattice::Atoms::initialize_ferromagnetic() {
 }
 
 void lattice::Atoms::initialize_antiferromagnetic() {
-    const auto &indices = geometry_.get_atom_indices();
+    const auto &indices = topology_.get_atom_indices();
     for (size_t i = 0; i < spins_.size(); ++i) {
         auto [x, y, incel] = indices[i];
         int spin = ((x + y) % 2 == 0) ? 1 : -1;
@@ -70,7 +70,7 @@ void lattice::Atoms::initialize_antiferromagnetic() {
 }
 
 void lattice::Atoms::initialize_stripped() {
-    const auto &indices = geometry_.get_atom_indices();
+    const auto &indices = topology_.get_atom_indices();
     for (size_t i = 0; i < spins_.size(); ++i) {
         auto [x, y, incel] = indices[i];
         int spin = (x % 2 == 0) ? 1 : -1;

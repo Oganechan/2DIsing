@@ -1,13 +1,16 @@
 #ifndef ATOMS_HPP
 #define ATOMS_HPP
 
-#include "geometry.hpp"
+#include "topology.hpp"
+#include "interaction.hpp"
 #include "spin.hpp"
 #include <vector>
 
-namespace lattice {
+namespace lattice
+{
 
-class Atoms {
+  class Atoms
+  {
   public:
     explicit Atoms(const Config &config, Random &rng);
 
@@ -23,14 +26,16 @@ class Atoms {
     int get_magnetic_count() const { return magnetic_count_; }
     bool get_magnetic_state(int id) const { return magnetic_mask_[id]; }
 
-    auto &get_geometry() const { return geometry_; }
+    auto &get_topology() const { return topology_; }
+    auto &get_interaction() const { return interaction_; }
     auto &get_spins() const { return spins_; }
     auto &get_magnetic_atoms() const { return magnetic_atoms_; }
 
   private:
     Random &rng_;
 
-    const Geometry geometry_;
+    const Topology topology_;
+    const Interaction interaction_;
     const double concentration_;
 
     std::vector<IsingSpin> spins_;
@@ -39,7 +44,7 @@ class Atoms {
     int magnetic_count_ = 0;
 
     void update_magnetic_list();
-};
+  };
 
 } // namespace lattice
 

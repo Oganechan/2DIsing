@@ -4,9 +4,11 @@
 #include "../../external/random/random.hpp"
 #include <cstdint>
 
-namespace lattice {
+namespace lattice
+{
 
-class IsingSpin {
+  class IsingSpin
+  {
   public:
     IsingSpin() : value_(1) {}
     explicit IsingSpin(int8_t value) : value_(value) {}
@@ -21,7 +23,17 @@ class IsingSpin {
 
   private:
     int8_t value_;
-};
+  };
+
+  class XYSpin
+  {
+  public:
+    XYSpin() : phi_(0.0) {}
+    explicit XYSpin(double phi) : phi_(phi) {}
+
+  private:
+    double phi_;
+  };
 
 } // namespace lattice
 
