@@ -2,7 +2,6 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import argparse
-from scipy.optimize import curve_fit
 
 cm = 1 / 2.54
 
@@ -28,8 +27,8 @@ ax.plot(r, Tc, c="black")
 ax.grid(True, linestyle="--", alpha=0.3, color="black")
 ax.set_xlabel(r"Фрустрационный параметр $r =  \frac{J_2}{J_1}$")
 ax.set_ylabel(r"Критическая температура $T_N$")
-ax.set_xlim(0.0, 1.0)
-ax.set_ylim(0.0, 2.5)
+# ax.set_xlim(0.0, 1.0)
+# ax.set_ylim(0.0, 2.5)
 
 for spine in ["top", "right"]:
     ax.spines[spine].set_visible(False)
