@@ -40,6 +40,7 @@ install(PROGRAMS
   scripts/visualize_plots.py
   scripts/visualize_Tc.py
   scripts/auto_Tc.sh
+  scripts/run.sh
 
   DESTINATION scripts
 )
