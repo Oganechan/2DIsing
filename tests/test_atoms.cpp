@@ -1,4 +1,4 @@
-#include "../src/lattice/atoms.hpp"
+#include "atoms.hpp"
 #include <cstddef>
 #include <cstdlib>
 #include <exception>
@@ -10,14 +10,15 @@ int main() {
 
         Config config;
         config.set<int>("lattice.system_size", 100);
-        config.set<int>("lattice.shell_count", 1);
-        config.set<std::string>("lattice.crystal_type", "rectangular");
+        config.set<int>("lattice.shell_count", 3);
+        config.set<std::string>("lattice.crystal_type", "triangular");
         config.set<std::string>("lattice.boundary_conditions", "periodic");
+        config.set<std::string>("lattice.interaction_type", "direction");
         config.set<double>("physical.concentration", 1.0);
 
         lattice::Atoms atoms0(config, rng);
 
-        int total_atoms = atoms0.get_geometry().get_atom_count();
+        int total_atoms = atoms0.get_topology().get_atom_count();
         int magnetic_count = atoms0.get_magnetic_count();
 
         std::cout << "Total atoms: " << total_atoms << "\n";

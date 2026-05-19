@@ -1,7 +1,8 @@
 {
     "lattice": {
         "crystal_type": "rectangular",
-        "boundary_conditions": "periodic"
+        "boundary_conditions": "periodic",
+        "interaction_type" : "direction"
     },
     "physical": {
         "concentration": 1.0
@@ -13,22 +14,11 @@
             16
         ],
         "r_values": [
-            0.0,
-            0.1,
-            0.2,
-            0.3,
-            0.4,
-            0.45,
-            0.55,
-            0.6,
-            0.7,
-            0.8,
-            0.9,
-            1.0
+            0.5,0.4,0.3,0.2,0.1,0.0,-0.1,-0.2,-0.3,-0.4,-0.5
         ],
         "number_realizations": 10,
         "number_threads": 10,
         "final_ln_f": 1.0e-6,
-        "shake_probability": 0.001
+        "shake_probability": 0.0
     }
 }

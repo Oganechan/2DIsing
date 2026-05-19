@@ -1,15 +1,17 @@
-#include "../src/algorithm/metropolis.hpp"
+#include "metropolis.hpp"
 #include <cstdlib>
 #include <exception>
 #include <iostream>
 
-int main() {
-    try {
+int main()
+{
+    try
+    {
         Config config;
         config.set<int>("lattice.system_size", 32);
-        config.set<int>("lattice.shell_count", 2);
         config.set<std::string>("lattice.crystal_type", "rectangular");
         config.set<std::string>("lattice.boundary_conditions", "periodic");
+        config.set<std::string>("lattice.interaction_type", "shell");
         config.set<double>("physical.concentration", 0.6);
         config.set<std::vector<double>>("physical.exchange_constants",
                                         {-1.0, -1.0});
@@ -20,8 +22,9 @@ int main() {
         metropolis.set_output_dir("./metropolis_snaps");
 
         metropolis.run();
-
-    } catch (const std::exception &e) {
+    }
+    catch (const std::exception &e)
+    {
         std::cerr << "Error: " << e.what() << "\n";
         return EXIT_FAILURE;
     }

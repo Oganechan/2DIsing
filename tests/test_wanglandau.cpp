@@ -1,4 +1,4 @@
-#include "../src/algorithm/wanglandau.hpp"
+#include "wanglandau.hpp"
 #include <chrono>
 #include <cmath>
 #include <cstdlib>
@@ -7,27 +7,30 @@
 #include <iostream>
 #include <quadmath.h>
 
-std::string float128_to_string(__float128 value) {
+std::string float128_to_string(__float128 value)
+{
     char buf[128];
     quadmath_snprintf(buf, sizeof(buf), "%.4Qg", value);
     return std::string(buf);
 }
 
-int main() {
-    try {
-        double J1 = -1.0, J2 = 0.0;
+int main()
+{
+    try
+    {
+        double J1 = 1.0, J2 = 1.0, J3 = -0.5;
         int L = 12;
 
         Config config;
         config.set<int>("lattice.system_size", L);
-        config.set<int>("lattice.shell_count", 2);
         config.set<std::string>("lattice.crystal_type", "rectangular");
         config.set<std::string>("lattice.boundary_conditions", "periodic");
+        config.set<std::string>("lattice.interaction_type", "direction");
         config.set<double>("physical.concentration", 1.0);
         config.set<std::vector<double>>("physical.exchange_constants",
-                                        {J1, J2});
+                                        {J1, J2, J3});
         config.set<double>("simulation.final_ln_f", 1.0e-6);
-        config.set<double>("simulation.shake_probability", 0.001);
+        config.set<double>("simulation.shake_probability", 0.0);
 
         algorithm::WangLandau wl(config);
         std::cout << "Start WL Simulation...\n";
@@ -58,7 +61,8 @@ int main() {
 
         const double min_T = 0.01, max_T = 100.0;
         const int num_steps = 500;
-        for (int i = 0; i < num_steps; ++i) {
+        for (int i = 0; i < num_steps; ++i)
+        {
             double exponent =
                 std::log10(min_T) +
                 i * (std::log10(max_T) - std::log10(min_T)) / (num_steps - 1);
@@ -80,14 +84,16 @@ int main() {
 
         auto ln_g_ = wl.get_ln_g();
         std::vector<int64_t> keys;
-        for (const auto &[key, ln_g] : ln_g_) {
+        for (const auto &[key, ln_g] : ln_g_)
+        {
             keys.push_back(key);
         }
         std::sort(keys.begin(), keys.end());
 
         std::ofstream ln_g_file("test_wl_ln_g.csv");
         ln_g_file << "key,E,ln_g,g\n";
-        for (int key : keys) {
+        for (int key : keys)
+        {
             double ln_g = ln_g_.at(key);
             double E = key / 100.0;
 
@@ -99,8 +105,9 @@ int main() {
 
         system("python3 ../scripts/visualize_plots.py test_wl_results.csv");
         system("python3 ../scripts/visualize_ln_g.py");
-
-    } catch (const std::exception &e) {
+    }
+    catch (const std::exception &e)
+    {
         std::cerr << "Error: " << e.what() << "\n";
         return EXIT_FAILURE;
     }
