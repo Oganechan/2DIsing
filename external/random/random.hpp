@@ -29,6 +29,8 @@ class Random {
         return dist(engine_);
     }
 
+    auto &engine() {return engine_;}
+
   private:
     std::mt19937 engine_;
 
