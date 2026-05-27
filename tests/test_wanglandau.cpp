@@ -18,25 +18,24 @@ int main()
 {
     try
     {
-        double J1 = 1.0, J2 = 1.0, J3 = -0.5;
-        int L = 12;
+        double J1 = -1.0;
+        int L = 16;
 
         Config config;
         config.set<int>("lattice.system_size", L);
-        config.set<std::string>("lattice.crystal_type", "rectangular");
+        config.set<std::string>("lattice.crystal_type", "triangular");
         config.set<std::string>("lattice.boundary_conditions", "periodic");
         config.set<std::string>("lattice.interaction_type", "direction");
         config.set<double>("physical.concentration", 1.0);
         config.set<std::vector<double>>("physical.exchange_constants",
-                                        {J1, J2, J3});
+                                        {1.0, 1.0, J1});
         config.set<double>("simulation.final_ln_f", 1.0e-6);
-        config.set<double>("simulation.shake_probability", 0.0);
+        config.set<double>("simulation.shake_probability", 0.01);
 
         algorithm::WangLandau wl(config);
         std::cout << "Start WL Simulation...\n";
 
-        std::chrono::time_point start =
-            std::chrono::high_resolution_clock::now();
+        std::chrono::time_point start = std::chrono::high_resolution_clock::now();
 
         wl.run();
 
@@ -59,14 +58,11 @@ int main()
 
         result_file << std::scientific << std::setprecision(8);
 
-        const double min_T = 0.01, max_T = 100.0;
+        const double min_T = 0.01, max_T = 5.0;
         const int num_steps = 500;
         for (int i = 0; i < num_steps; ++i)
         {
-            double exponent =
-                std::log10(min_T) +
-                i * (std::log10(max_T) - std::log10(min_T)) / (num_steps - 1);
-            double T = std::pow(10, exponent);
+            double T = min_T + (max_T - min_T) / num_steps * i;
             __float128 Z = wl.compute_partition_function(T);
             __float128 E = wl.compute_average_energy(T);
             __float128 C = wl.compute_heat_capacity(T);

@@ -39,3 +39,13 @@ target_link_libraries(test_wanglandau
   PRIVATE
     quadmath
 )
+
+add_executable(test_metropolis)
+target_sources(test_metropolis
+  PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_metropolis.cpp
+)
+target_link_libraries(test_metropolis
+  PUBLIC
+    algorithm
+)
