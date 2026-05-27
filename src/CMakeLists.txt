@@ -47,6 +47,7 @@ add_library(algorithm STATIC)
 target_sources(algorithm
   PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/wanglandau.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/metropolis.cpp
 )
 target_include_directories(algorithm
   PUBLIC

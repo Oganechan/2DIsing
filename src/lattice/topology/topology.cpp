@@ -7,6 +7,7 @@ namespace
     {
         const std::unordered_map<std::string, lattice::CrystalType> mapping = {
             {"rectangular", lattice::CrystalType::RECTANGULAR},
+            {"rectangular_anisotropic", lattice::CrystalType::RECTANGULAR_ANISOTROPIC},
             {"triangular", lattice::CrystalType::TRIANGULAR}};
 
         if (auto it = mapping.find(type); it != mapping.end())
@@ -67,6 +68,12 @@ void lattice::Topology::initialize_lattice()
     case lattice::CrystalType::RECTANGULAR:
         basis_vectors_ = {{0.0, 0.0}};
         lattice_vectors_ = {{1.0, 0.0}, {0.0, 1.0}};
+        directions_ = {{1, 0}, {0, 1}};
+        break;
+
+    case lattice::CrystalType::RECTANGULAR_ANISOTROPIC:
+        basis_vectors_ = {{0.0, 0.0}};
+        lattice_vectors_ = {{1.0, 0.0}, {0.0, 1.1}};
         directions_ = {{1, 0}, {0, 1}};
         break;
 

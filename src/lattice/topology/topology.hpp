@@ -9,6 +9,7 @@ namespace lattice
   enum class CrystalType
   {
     RECTANGULAR,
+    RECTANGULAR_ANISOTROPIC,
     TRIANGULAR
   };
 

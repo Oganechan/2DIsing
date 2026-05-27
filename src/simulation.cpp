@@ -11,6 +11,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <chrono>
 
 namespace
 {
@@ -76,10 +77,8 @@ Simulation::Simulation(Config &base_cfg)
 void Simulation::run()
 {
     const int num_steps = 1'000;
-    const double min_T = 0.01, max_T = 100.0;
-    const double log10_min_T = std::log10(min_T),
-                 log10_max_T = std::log10(max_T);
-    const double step = (log10_max_T - log10_min_T) / (num_steps - 1);
+    const double min_T = 0.01, max_T = 5.0;
+    const double step = (max_T - min_T) / (num_steps - 1);
 
     std::string sim_name = generate_simulation_name();
     output_dir_ = fs::path("results") / sim_name;
@@ -98,15 +97,19 @@ void Simulation::run()
 
         for (int L : lattice_sizes_)
         {
-            std::cout << " L = " << L << std::endl;
+            std::cout << " L = " << L << ", t = ";
 
             std::vector<double> Tc_realize(n_realizations_);
             std::vector<std::vector<__float128>> E_realize(
                 num_steps, std::vector<__float128>(n_realizations_));
             std::vector<std::vector<__float128>> C_realize(
                 num_steps, std::vector<__float128>(n_realizations_));
+            std::vector<std::vector<__float128>> U_realize(
+                num_steps, std::vector<__float128>(n_realizations_));
             std::vector<std::vector<__float128>> S_realize(
                 num_steps, std::vector<__float128>(n_realizations_));
+
+            std::vector<double> durations;
 
 #pragma omp parallel for
             for (int rep = 0; rep < n_realizations_; ++rep)
@@ -114,10 +117,16 @@ void Simulation::run()
                 Config config = base_cfg_;
                 config.set<int>("lattice.system_size", L);
                 // config.set<int>("lattice.shell_count", 3);
+
                 if (config.get<std::string>("lattice.crystal_type") == "rectangular")
                 {
                     config.set<std::vector<double>>("physical.exchange_constants",
-                                                    {1.0, r});
+                                                    {-1.0, -r});
+                }
+                else if (config.get<std::string>("lattice.crystal_type") == "rectangular_anisotropic")
+                {
+                    config.set<std::vector<double>>("physical.exchange_constants",
+                                                    {-1.0, -config.get<double>("physical.concentration"), -r});
                 }
                 else
                 {
@@ -125,19 +134,26 @@ void Simulation::run()
                                                     {1.0, 1.0, r});
                 }
 
+                std::chrono::time_point start = std::chrono::steady_clock::now();
+
                 algorithm::WangLandau wl(config);
                 wl.run();
 
+                std::chrono::time_point end = std::chrono::steady_clock::now();
+                long duration = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
+                durations.push_back(duration);
+
                 for (int i = 0; i < num_steps; ++i)
                 {
-                    double exponent = log10_min_T + i * step;
-                    double T = std::pow(10, exponent);
+                    double T = min_T + i * step;
                     __float128 E = wl.compute_average_energy(T);
                     __float128 C = wl.compute_heat_capacity(T);
+                    __float128 U = wl.compute_energy_cumulant(T);
                     __float128 S = wl.compute_entropy(T);
 
                     E_realize[i][rep] = E;
                     C_realize[i][rep] = C;
+                    U_realize[i][rep] = U;
                     S_realize[i][rep] = S;
                 }
 
@@ -145,20 +161,23 @@ void Simulation::run()
                 Tc_realize[rep] = Tc;
             }
 
+            std::cout << compute_average(durations) << " seconds" <<std::endl;
+
             std::ofstream f(r_path / ("L" + std::to_string(L) + "results.csv"));
-            f << "T,E,C,S\n";
+            f << "T,E,C,U,S\n";
             for (int i = 0; i < num_steps; ++i)
             {
-                double exponent = log10_min_T + i * step;
-                double T = std::pow(10, exponent);
+                double T = min_T + i * step;
 
                 __float128 average_E = compute_average(E_realize[i]);
                 __float128 average_C = compute_average(C_realize[i]);
+                __float128 average_U = compute_average(U_realize[i]);
                 __float128 average_S = compute_average(S_realize[i]);
 
                 f << T << ",";
                 f << float128_to_string(average_E) << ",";
                 f << float128_to_string(average_C) << ",";
+                f << float128_to_string(average_U) << ",";
                 f << float128_to_string(average_S) << "\n";
             }
             f.close();
