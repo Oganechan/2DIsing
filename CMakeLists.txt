@@ -30,7 +30,7 @@ install(TARGETS simulation algorithm physics lattice
   ARCHIVE DESTINATION lib
 )
 
-install(TARGETS test_geometry test_atoms test_calculator test_wanglandau
+install(TARGETS test_geometry test_atoms test_calculator test_wanglandau test_metropolis
   RUNTIME DESTINATION tests
 )
 
